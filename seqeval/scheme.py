@@ -97,6 +97,28 @@ class Token:
         return False
 
 
+class CHAR(Token):
+    allowed_prefix = Prefix.I | Prefix.O | Prefix.B
+    start_patterns = {
+        (Prefix.O, Prefix.I, Tag.ANY),
+        (Prefix.I, Prefix.I, Tag.DIFF),
+        (Prefix.B, Prefix.I, Tag.ANY),
+        (Prefix.I, Prefix.B, Tag.SAME),
+        (Prefix.B, Prefix.B, Tag.SAME)
+    }
+    inside_patterns = {
+
+    }
+    end_patterns = {
+        (Prefix.I, Prefix.I, Tag.DIFF),
+        (Prefix.I, Prefix.O, Tag.ANY),
+        (Prefix.I, Prefix.B, Tag.ANY),
+        (Prefix.B, Prefix.O, Tag.ANY),
+        (Prefix.B, Prefix.I, Tag.DIFF),
+        (Prefix.B, Prefix.B, Tag.SAME)
+    }
+    
+
 class IOB1(Token):
     allowed_prefix = Prefix.I | Prefix.O | Prefix.B
     start_patterns = {

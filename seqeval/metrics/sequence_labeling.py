@@ -19,6 +19,19 @@ from seqeval.reporters import DictReporter, StringReporter
 from seqeval.scheme import Token
 
 
+def entity_repr_char_tokenizer(entities):
+    '''
+    y_true = [['O', 'O', 'O', 'B-PS', 'I-PS', 'I-PS', 'O']]
+    get_entities(y_true) : [('PS', 3, 5)] 일때,
+    
+    [('PS', 3, 5)] -> [('PS', 3, 4), ('PS', 4, 5), ('PS', 5, 6)]
+    '''
+    res = [[(tag, i, i+1) for i in range(sp, ep+1)] for (tag, sp, ep) in entities]
+    res = [tt for t in res for tt in t]
+    return res
+
+
+
 def precision_recall_fscore_support(y_true: List[List[str]],
                                     y_pred: List[List[str]],
                                     *,
@@ -108,9 +121,9 @@ def precision_recall_fscore_support(y_true: List[List[str]],
     def extract_tp_actual_correct(y_true, y_pred, suffix, *args):
         entities_true = defaultdict(set)
         entities_pred = defaultdict(set)
-        for type_name, start, end in get_entities(y_true, suffix):
+        for type_name, start, end in entity_repr_char_tokenizer(get_entities(y_true, suffix)):
             entities_true[type_name].add((start, end))
-        for type_name, start, end in get_entities(y_pred, suffix):
+        for type_name, start, end in entity_repr_char_tokenizer(get_entities(y_pred, suffix)):
             entities_pred[type_name].add((start, end))
 
         target_names = sorted(set(entities_true.keys()) | set(entities_pred.keys()))
